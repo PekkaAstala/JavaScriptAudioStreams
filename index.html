@@ -2,6 +2,8 @@
 <div id="html">
     <head>
         <title>Playing around with Web Audio API</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/5.0.0-beta.11/Rx.umd.js"></script>
+        <script src="audiostream.js"></script>
     </head>
     <body>
         <h1>Let the music play!</h1>
@@ -15,7 +17,9 @@
         <canvas id="canvas" width="800" height="600"></canvas>
 
         <script>
-            function visualize(frequencyData) {
+
+            var audioElement = document.querySelector('audio');
+            streamFromAudioElement(audioElement, 50).subscribe(function(frequencyData) {
                 let canvasWidth = 800;
                 let canvasHeight = 600;
 
@@ -35,27 +39,8 @@
 
                     ctx.fillRect(leftX, topY, rightX, bottomY);
                 });
+            });
 
-            }
-
-
-            var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            var audioElement = document.querySelector('audio');
-            var source = audioCtx.createMediaElementSource(audioElement);
-
-            var analyser = audioCtx.createAnalyser();
-            source.connect(analyser);
-            analyser.fftSize = 256;
-            analyser.smoothingTimeConstant = 0.0;
-            var bufferLength = analyser.frequencyBinCount;
-
-            setInterval(() =>{
-                var dataArray = new Uint8Array(bufferLength);
-                analyser.getByteFrequencyData(dataArray);
-                visualize(dataArray);
-            }, 50);
-
-            analyser.connect(audioCtx.destination);
         </script>
     </body>
 </div>
