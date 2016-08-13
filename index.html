@@ -30,8 +30,8 @@
                 frequencyData.forEach((datapoint, index) => {
                     let leftX = index * barWidth;
                     let rightX = leftX + barWidth;
-                    let topY = 0;
-                    let bottomY = datapoint;
+                    let topY = canvasHeight-datapoint;
+                    let bottomY = canvasHeight;
 
                     ctx.fillRect(leftX, topY, rightX, bottomY);
                 });
@@ -45,14 +45,15 @@
 
             var analyser = audioCtx.createAnalyser();
             source.connect(analyser);
-            analyser.fftSize = 32;
+            analyser.fftSize = 256;
+            analyser.smoothingTimeConstant = 0.0;
             var bufferLength = analyser.frequencyBinCount;
 
             setInterval(() =>{
                 var dataArray = new Uint8Array(bufferLength);
                 analyser.getByteFrequencyData(dataArray);
                 visualize(dataArray);
-            }, 100);
+            }, 50);
 
             analyser.connect(audioCtx.destination);
         </script>
