@@ -1,4 +1,5 @@
-function streamFromAudioElement(audioElement, interval) {
+function audioElementAnalyzer(audioElement) {
+    console.log('CREAING ANALYZER')
     let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     let source = audioCtx.createMediaElementSource(audioElement);
     let analyser = audioCtx.createAnalyser();
@@ -8,14 +9,10 @@ function streamFromAudioElement(audioElement, interval) {
     let bufferLength = analyser.frequencyBinCount;
     analyser.connect(audioCtx.destination);
 
-    let intervalStream = Rx.Observable.interval(interval);
-
-    let subject = new Rx.Subject();
-    intervalStream.subscribe(function() {
+    return function() {
+        console.log('ANALYZING')
         var dataArray = new Uint8Array(bufferLength);
         analyser.getByteFrequencyData(dataArray);
-        subject.next(dataArray);
-    });
-
-    return subject;
+        return dataArray
+    }
 }
