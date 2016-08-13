@@ -19,7 +19,21 @@
         <script>
 
             var audioElement = document.querySelector('audio');
-            streamFromAudioElement(audioElement, 50).subscribe(function(frequencyData) {
+            var analyzer = audioElementAnalyzer(audioElement) 
+            Rx.Observable
+                .interval(1000)
+                .filter(function() {
+                    console.log('filtering')
+                    return true
+                })
+                .map(function(i) {
+                    return analyzer()
+                })
+                .subscribe(visualizeAudio);
+
+
+            function visualizeAudio(frequencyData) {
+                console.log('VISUALIZING!!')
                 let canvasWidth = 800;
                 let canvasHeight = 600;
 
@@ -39,8 +53,7 @@
 
                     ctx.fillRect(leftX, topY, rightX, bottomY);
                 });
-            });
-
+            }
         </script>
     </body>
 </div>
