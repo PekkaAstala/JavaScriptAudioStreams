@@ -5,6 +5,7 @@
     </head>
     <body>
         <h1>Let the music play!</h1>
+
         <audio id="audio" controls>
             <source src="DOt_-_05_-_IMF.mp3" type="audio/mpeg">
         </audio>
@@ -14,12 +15,18 @@
             var audioElement = document.querySelector('audio');
             var source = audioCtx.createMediaElementSource(audioElement);
 
-            // Double the volume
-            var gainNode = audioCtx.createGain();
-            gainNode.gain.value = 2.0;
-            source.connect(gainNode);
+            var analyser = audioCtx.createAnalyser();
+            source.connect(analyser);
+            analyser.fftSize = 32;
+            var bufferLength = analyser.frequencyBinCount;
 
-            gainNode.connect(audioCtx.destination);
+            setInterval(() =>{
+                var dataArray = new Uint8Array(bufferLength);
+                analyser.getByteFrequencyData(dataArray);
+                console.log(dataArray);
+            }, 1000);
+
+            analyser.connect(audioCtx.destination);
         </script>
     </body>
 </div>
