@@ -5,8 +5,21 @@
     </head>
     <body>
         <h1>Let the music play!</h1>
-        <audio controls>
+        <audio id="audio" controls>
             <source src="DOt_-_05_-_IMF.mp3" type="audio/mpeg">
         </audio>
+
+        <script>
+            var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            var audioElement = document.querySelector('audio');
+            var source = audioCtx.createMediaElementSource(audioElement);
+
+            // Double the volume
+            var gainNode = audioCtx.createGain();
+            gainNode.gain.value = 2.0;
+            source.connect(gainNode);
+
+            gainNode.connect(audioCtx.destination);
+        </script>
     </body>
 </div>
