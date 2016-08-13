@@ -10,7 +10,35 @@
             <source src="DOt_-_05_-_IMF.mp3" type="audio/mpeg">
         </audio>
 
+        <div style="clear:both"></div>
+
+        <canvas id="canvas" width="800" height="600"></canvas>
+
         <script>
+            function visualize(frequencyData) {
+                let canvasWidth = 800;
+                let canvasHeight = 600;
+
+                let c = document.getElementById("canvas");
+                let ctx = c.getContext("2d");
+
+                ctx.fillStyle = "#FFFFFF";
+                ctx.fillRect(0,0,800,600);
+
+                ctx.fillStyle = "#FF0000";
+                let barWidth = canvasWidth / frequencyData.length;
+                frequencyData.forEach((datapoint, index) => {
+                    let leftX = index * barWidth;
+                    let rightX = leftX + barWidth;
+                    let topY = 0;
+                    let bottomY = datapoint;
+
+                    ctx.fillRect(leftX, topY, rightX, bottomY);
+                });
+
+            }
+
+
             var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             var audioElement = document.querySelector('audio');
             var source = audioCtx.createMediaElementSource(audioElement);
@@ -23,8 +51,8 @@
             setInterval(() =>{
                 var dataArray = new Uint8Array(bufferLength);
                 analyser.getByteFrequencyData(dataArray);
-                console.log(dataArray);
-            }, 1000);
+                visualize(dataArray);
+            }, 100);
 
             analyser.connect(audioCtx.destination);
         </script>
