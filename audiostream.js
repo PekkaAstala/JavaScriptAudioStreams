@@ -1,5 +1,4 @@
 function audioElementAnalyzer(audioElement) {
-    console.log('CREAING ANALYZER')
     let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     let source = audioCtx.createMediaElementSource(audioElement);
     let analyser = audioCtx.createAnalyser();
@@ -10,7 +9,6 @@ function audioElementAnalyzer(audioElement) {
     analyser.connect(audioCtx.destination);
 
     return function() {
-        console.log('ANALYZING')
         var dataArray = new Uint8Array(bufferLength);
         analyser.getByteFrequencyData(dataArray);
         return dataArray

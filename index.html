@@ -3,6 +3,7 @@
     <head>
         <title>Playing around with Web Audio API</title>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/5.0.0-beta.11/Rx.umd.js"></script>
+        <script src="visualizer.js"></script>
         <script src="audiostream.js"></script>
     </head>
     <body>
@@ -17,43 +18,30 @@
         <canvas id="canvas" width="800" height="600"></canvas>
 
         <script>
+            var canvas = document.querySelector("canvas");
+            var visualizer = new Visualizer(canvas);
 
             var audioElement = document.querySelector('audio');
-            var analyzer = audioElementAnalyzer(audioElement) 
+            var analyzer = audioElementAnalyzer(audioElement);
             Rx.Observable
-                .interval(1000)
-                .filter(function() {
-                    console.log('filtering')
-                    return true
-                })
+                .interval(50)
                 .map(function(i) {
                     return analyzer()
                 })
-                .subscribe(visualizeAudio);
-
-
-            function visualizeAudio(frequencyData) {
-                console.log('VISUALIZING!!')
-                let canvasWidth = 800;
-                let canvasHeight = 600;
-
-                let c = document.getElementById("canvas");
-                let ctx = c.getContext("2d");
-
-                ctx.fillStyle = "#FFFFFF";
-                ctx.fillRect(0,0,800,600);
-
-                ctx.fillStyle = "#FF0000";
-                let barWidth = canvasWidth / frequencyData.length;
-                frequencyData.forEach((datapoint, index) => {
-                    let leftX = index * barWidth;
-                    let rightX = leftX + barWidth;
-                    let topY = canvasHeight-datapoint;
-                    let bottomY = canvasHeight;
-
-                    ctx.fillRect(leftX, topY, rightX, bottomY);
+                .map(function(dataArray) {
+                    let foo = [];
+                    dataArray.forEach((item, index) => {
+                        foo.push({
+                            index: index,
+                            value: item
+                        });
+                    });
+                    return foo;
+                })
+                .subscribe((data) => {
+                    visualizer.draw(data);
                 });
-            }
+
         </script>
     </body>
 </div>
