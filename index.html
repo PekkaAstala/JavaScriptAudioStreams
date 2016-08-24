@@ -21,8 +21,11 @@
             var canvas = document.querySelector("canvas");
             var visualizer = new Visualizer(canvas);
 
+            var smoothness = 0.8;
+            var precision = 5;
+
             var audioElement = document.querySelector('audio');
-            var analyzer = audioElementAnalyzer(audioElement);
+            var analyzer = audioElementAnalyzer(audioElement, precision, smoothness);
             Rx.Observable
                 .interval(50)
                 .map(function(i) {

@@ -35,7 +35,7 @@ class Visualizer {
     }
 
     draw(data) {
-        var positionAttributeLocation =this.gl.getAttribLocation(this.program, "a_position");
+        var positionAttributeLocation = this.gl.getAttribLocation(this.program, "a_position");
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
         let positions = this.calculateVertices(data);
@@ -47,21 +47,23 @@ class Visualizer {
     }
 
     calculateVertices(data) {
+        let radianInDegrees = 0.0174533;
         let coords = [];
+        let sectorInDegrees = 360 / data.length;
+        let sectorWidthInRadians = sectorInDegrees * radianInDegrees;
 
         data.forEach((datapoint, count) => {
-            if (count > 6) {
-                return; // just first range for now
-            }
+            let origo = [0, 0];
+            let leftEdgeVerticalCoords = [0, datapoint.value / 255];
 
             let initialCoords = [
-                [0, 0],
-                [0, datapoint.value / 300],
-                [0.2, datapoint.value / 300]
+                origo,
+                leftEdgeVerticalCoords,
+                this.rotate(leftEdgeVerticalCoords, sectorWidthInRadians)
             ];
 
-            let rotateDegrees = 360 / data.length * count;
-            let rotateRadians = rotateDegrees / (Math.PI * 2);
+            let rotateDegrees = sectorInDegrees * count;
+            let rotateRadians = rotateDegrees * radianInDegrees;
 
             let rotatedCoords = [
                 this.rotate(initialCoords[0], rotateRadians),
