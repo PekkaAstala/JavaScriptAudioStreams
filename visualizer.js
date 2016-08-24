@@ -50,16 +50,43 @@ class Visualizer {
         let coords = [];
 
         data.forEach((datapoint, count) => {
-            if (count > 0) {
+            if (count > 6) {
                 return; // just first range for now
             }
 
-            coords.push(0); coords.push(0); // origo
-            coords.push(-0.5); coords.push(datapoint.value / 300);
-            coords.push(0.5); coords.push(datapoint.value / 300);
+            let initialCoords = [
+                [0, 0],
+                [0, datapoint.value / 300],
+                [0.2, datapoint.value / 300]
+            ];
+
+            let rotateDegrees = 360 / data.length * count;
+            let rotateRadians = rotateDegrees / (Math.PI * 2);
+
+            let rotatedCoords = [
+                this.rotate(initialCoords[0], rotateRadians),
+                this.rotate(initialCoords[1], rotateRadians),
+                this.rotate(initialCoords[2], rotateRadians)
+            ];
+
+            coords.push(rotatedCoords[0][0]);
+            coords.push(rotatedCoords[0][1]);
+            coords.push(rotatedCoords[1][0]);
+            coords.push(rotatedCoords[1][1]);
+            coords.push(rotatedCoords[2][0]);
+            coords.push(rotatedCoords[2][1]);
         });
 
         return coords;
+    }
+
+    rotate(point, rotateRadians) {
+        let cos = Math.cos(rotateRadians);
+        let sin = Math.sin(rotateRadians);
+        return [
+            cos * point[0] + sin * point[1],
+            -sin * point[0] + cos * point[1]
+        ];
     }
 
     createShader(type, source) {
