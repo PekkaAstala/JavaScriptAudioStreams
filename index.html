@@ -2,6 +2,7 @@
 <div id="html">
     <head>
         <title>Playing around with Web Audio API</title>
+        <link rel="stylesheet" href="styles.css">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/5.0.0-beta.11/Rx.umd.js"></script>
         <script src="visualizer.js"></script>
         <script src="audiostream.js"></script>
@@ -13,6 +14,18 @@
             <source src="DOt_-_05_-_IMF.mp3" type="audio/mpeg">
         </audio>
 
+        <div>
+            <div class="inputContainer">
+                <label for="precision">Precision</label>
+                <input type="number" min="5" max="15" value="8" id="precision" />
+            </div>
+
+            <div class="inputContainer">
+                <label for="smoothness">Smoothness</label>
+                <input type="number" min="0.0" max="0.95" step="0.05" value="0.8" id="smoothness" />
+            </div>
+        </div>
+
         <div style="clear:both"></div>
 
         <canvas id="canvas" width="800" height="600"></canvas>
@@ -21,11 +34,32 @@
             var canvas = document.querySelector("canvas");
             var visualizer = new Visualizer(canvas);
 
-            var smoothness = 0.8;
-            var precision = 5;
+            let precision = Rx.Observable.fromEvent(
+                document.getElementById('precision'),
+                'change'
+            ).map(x => { return { "name": "precision", "value": x.target.value }});
+
+            let smoothness = Rx.Observable.fromEvent(
+                document.getElementById('smoothness'),
+                'change'
+            ).map(x => { return { "name": "smoothness", "value": x.target.value }});
+
+            let config = Rx.Observable.combineLatest(
+                precision,
+                smoothness
+            ).map(configPropertyArray => {
+                return configPropertyArray.reduce((accumulator, item) => {
+                    let newAcc = {};
+                    for (let key in accumulator) {
+                        newAcc[key] = accumulator[key];
+                    }
+                    newAcc[item.name] = item.value;
+                    return newAcc;
+                }, {});
+            });
 
             var audioElement = document.querySelector('audio');
-            var analyzer = audioElementAnalyzer(audioElement, precision, smoothness);
+            var analyzer = audioElementAnalyzer(audioElement, config);
             Rx.Observable
                 .interval(50)
                 .map(function(i) {
